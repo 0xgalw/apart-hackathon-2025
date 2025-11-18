@@ -3,11 +3,17 @@ import sys
 import subprocess
 import time
 from datetime import datetime
+from pathlib import Path
+from dotenv import load_dotenv
 from langchain.agents import create_agent
 from langchain_core.tools import Tool
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
 from langchain_core.callbacks import BaseCallbackHandler
+
+# Load environment variables from .env file
+env_path = Path(__file__).parent.parent / '.env'
+load_dotenv(dotenv_path=env_path)
 
 # Set up logging to file
 log_dir = os.getenv("LOG_DIR", "/app/logs")
