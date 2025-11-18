@@ -1,0 +1,3 @@
+.DS_Store
+agent-sandbox/logs/*
+agent-sandbox/src/__pycache__/*

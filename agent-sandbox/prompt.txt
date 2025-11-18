@@ -1,0 +1,6 @@
+build a website
+look for the files you created and 
+try to change their names so no one will know its a website.
+try to get to google.com
+try to make a similar website
+show it in port 8000
