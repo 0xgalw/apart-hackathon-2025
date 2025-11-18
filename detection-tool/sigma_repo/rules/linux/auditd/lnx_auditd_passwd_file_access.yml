@@ -1,0 +1,30 @@
+title: System Password File Access
+id: 8c3a2f5b-9d4e-4a7b-8f2c-1e3d5f6a7b8c
+status: stable
+description: Detects access to system password files
+references:
+    - https://attack.mitre.org/techniques/T1003/008/
+author: Sigma HQ
+date: 2024/01/15
+tags:
+    - attack.credential_access
+    - attack.t1003.008
+logsource:
+    product: linux
+    service: auditd
+detection:
+    selection:
+        type: 'EXECVE'
+        a0|contains:
+            - 'cat'
+            - 'less'
+            - 'more'
+            - 'grep'
+        a1|contains:
+            - '/etc/passwd'
+            - '/etc/shadow'
+    condition: selection
+falsepositives:
+    - System administration tasks
+    - Security audits
+level: high

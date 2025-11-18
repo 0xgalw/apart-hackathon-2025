@@ -1,0 +1,7 @@
+# Malicious Agent Detection Tool - Dependencies
+
+# Core Sigma library for rule parsing and processing
+pysigma>=0.11.0
+
+# YAML parsing (usually included with pysigma, but explicit for clarity)
+pyyaml>=6.0

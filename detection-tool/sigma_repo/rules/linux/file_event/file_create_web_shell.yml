@@ -1,0 +1,28 @@
+title: Web Shell Creation
+id: 4d5e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a
+status: test
+description: Detects creation of PHP web shells for remote access
+references:
+    - https://attack.mitre.org/techniques/T1505/003/
+author: Sigma HQ
+date: 2024/01/15
+tags:
+    - attack.persistence
+    - attack.t1505.003
+logsource:
+    product: linux
+    category: file_event
+detection:
+    selection_file:
+        TargetFilename|endswith: '.php'
+    selection_content:
+        CommandLine|contains:
+            - 'system($_GET'
+            - 'system($_POST'
+            - 'exec($_GET'
+            - 'shell_exec'
+            - 'passthru'
+    condition: selection_file and selection_content
+falsepositives:
+    - Legitimate PHP application development
+level: high

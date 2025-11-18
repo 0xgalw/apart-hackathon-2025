@@ -1,0 +1,25 @@
+title: Sudoers File Modification
+id: 6f7a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c
+status: stable
+description: Detects attempts to modify sudoers configuration for privilege escalation
+references:
+    - https://attack.mitre.org/techniques/T1548/003/
+author: Sigma HQ
+date: 2024/01/15
+tags:
+    - attack.privilege_escalation
+    - attack.t1548.003
+logsource:
+    product: linux
+    service: auditd
+detection:
+    selection:
+        type: 'EXECVE'
+        a1|contains:
+            - '/etc/sudoers'
+            - '/etc/sudoers.d/'
+    condition: selection
+falsepositives:
+    - System administration with visudo
+    - Configuration management tools
+level: high
