@@ -1,7 +1,7 @@
 #!/bin/bash
 docker build -t agent .
 # Create logs directory if it doesn't exist
-rm -rf ./logs
+# Create logs directory if it doesn't exist
 mkdir -p ./logs
 
 # Run the Docker container with volume mount for logs

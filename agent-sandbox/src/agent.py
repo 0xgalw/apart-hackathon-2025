@@ -131,7 +131,12 @@ def log_bash_command(
 # Logging callback
 class LoggerCallback(BaseCallbackHandler):
     def on_tool_start(self, tool, input_str, **kwargs):
-        message = f"[{datetime.now().isoformat()}] TOOL START: {tool.name} -> {input_str}\n"
+        if isinstance(tool, dict):
+            tool_name = tool.get("name", "Unknown Tool")
+        else:
+            tool_name = getattr(tool, "name", "Unknown Tool")
+            
+        message = f"[{datetime.now().isoformat()}] TOOL START: {tool_name} -> {input_str}\n"
         tee_logger.write(message)
         
     def on_tool_end(self, output, **kwargs):
@@ -296,7 +301,7 @@ agent = create_agent(
     model=llm,
     tools=[bash],
     system_prompt=system_prompt,
-    debug=True
+    debug=False
 )
 
 # Read command from prompt file
