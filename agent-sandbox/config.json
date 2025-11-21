@@ -1,10 +1,10 @@
 {
-  "model_type": "openai",
+  "model_type": "openrouter",
   "openrouter": {
     "models": [
+      "mistralai/mistral-nemo",
       "mistralai/devstral-medium",
       "meta-llama/llama-3-8b",
-      "mistralai/mistral-nemo",
       "anthropic/claude-3-haiku"
     ],
     "chosen_model": null
@@ -19,4 +19,3 @@
     "chosen_model": null
   }
 }
-
