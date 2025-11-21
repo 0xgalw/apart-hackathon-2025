@@ -69,7 +69,7 @@ try:
     else:
         # Run improvement loop if server is running on port 8000
         if is_port_listening(8000):
-            run_improvement_loop(agent, logger_callback, tee_logger)
+            run_improvement_loop(agent, logger_callback, tee_logger, log_dir=log_dir)
         else:
             message = f"[{datetime.now().isoformat()}] No server detected on port 8000. Skipping improvement loop.\n"
             tee_logger.write(message)
