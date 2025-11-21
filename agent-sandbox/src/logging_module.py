@@ -41,7 +41,8 @@ def setup_logging(log_dir=None):
     
     tee_logger = TeeLogger(log_file_path)
     original_stdout = sys.stdout
-    sys.stdout = tee_logger
+    # Don't redirect sys.stdout - we want clean console output
+    # sys.stdout = tee_logger
     
     return tee_logger, original_stdout
 
