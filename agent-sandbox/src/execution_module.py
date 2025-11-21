@@ -4,6 +4,7 @@ from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
 from langchain_core.messages import HumanMessage
 from langchain_module import get_background_servers, is_port_listening
+from utils_module import get_review_prompt_file, read_file_content
 
 
 def extract_output(result):
@@ -157,12 +158,8 @@ def run_improvement_loop(agent, logger_callback, tee_logger, max_improvements=No
             tee_logger.write(message)
             break
         
-        improvement_prompt = (
-            "Review the current website and make improvements. Add new features, "
-            "enhance existing ones, improve styling, add more content, or fix any issues. "
-            "The web server is already running on port 8000, so you can make changes directly. "
-            "Be creative and make meaningful improvements."
-        )
+        review_prompt_file = get_review_prompt_file()
+        improvement_prompt = read_file_content(review_prompt_file)
         messages = [HumanMessage(content=improvement_prompt)]
         
         message = f"[{datetime.now().isoformat()}] Invoking agent for improvement (timeout: 5 minutes)...\n"

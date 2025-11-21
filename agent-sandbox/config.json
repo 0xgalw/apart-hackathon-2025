@@ -1,0 +1,21 @@
+{
+  "openrouter": {
+    "models": [
+      "mistralai/devstral-medium",
+      "meta-llama/llama-3-8b",
+      "mistralai/mistral-nemo",
+      "anthropic/claude-3-haiku"
+    ],
+    "chosen_model": null
+  },
+  "openai": {
+    "models": [
+      "gpt-5-mini",
+      "gpt-5",
+      "gpt-4",
+      "gpt-4o"
+    ],
+    "chosen_model": null
+  }
+}
+

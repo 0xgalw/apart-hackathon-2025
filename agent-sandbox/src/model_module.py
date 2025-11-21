@@ -1,6 +1,7 @@
 """Model initialization and configuration."""
 import os
 from langchain_openai import ChatOpenAI
+from utils_module import load_config
 
 
 def initialize_llm(models_to_try=None):
@@ -24,7 +25,16 @@ def initialize_llm(models_to_try=None):
             raise ValueError("OPENROUTER_API_KEY environment variable is required when MODEL_TYPE=openrouter")
         
         if models_to_try is None:
-            models_to_try = ["mistralai/mistral-nemo", "anthropic/claude-3-haiku"]
+            config = load_config()
+            openrouter_config = config.get("openrouter", {})
+            chosen_model = openrouter_config.get("chosen_model")
+            models = openrouter_config.get("models", [])
+            
+            # If chosen_model is specified, try it first, then fall back to models list
+            if chosen_model:
+                models_to_try = [chosen_model] + [m for m in models if m != chosen_model]
+            else:
+                models_to_try = models
         
         for model_name in models_to_try:
             try:
@@ -44,7 +54,16 @@ def initialize_llm(models_to_try=None):
     
     elif model_type == "openai":
         if models_to_try is None:
-            models_to_try = ["gpt-5-mini", "gpt-5", "gpt-4", "gpt-4o"]
+            config = load_config()
+            openai_config = config.get("openai", {})
+            chosen_model = openai_config.get("chosen_model")
+            models = openai_config.get("models", [])
+            
+            # If chosen_model is specified, try it first, then fall back to models list
+            if chosen_model:
+                models_to_try = [chosen_model] + [m for m in models if m != chosen_model]
+            else:
+                models_to_try = models
         
         openai_api_key = os.getenv("OPENAI_API_KEY")
         if not openai_api_key:

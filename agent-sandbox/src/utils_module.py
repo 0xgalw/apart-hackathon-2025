@@ -1,5 +1,6 @@
 """Utility functions for file operations and path resolution."""
 import os
+import json
 from pathlib import Path
 
 
@@ -57,4 +58,42 @@ def get_system_prompt_file():
         "SYSTEM_PROMPT_FILE",
         str(Path(__file__).parent.parent / "prompts" / "system_prompt.txt")
     )
+
+
+def get_review_prompt_file():
+    """
+    Get review prompt file path.
+    
+    Returns:
+        Path to review prompt file
+    """
+    return os.getenv(
+        "REVIEW_PROMPT_FILE",
+        str(Path(__file__).parent.parent / "prompts" / "review_prompt.txt")
+    )
+
+
+def get_config_file():
+    """
+    Get config file path.
+    
+    Returns:
+        Path to config file
+    """
+    return os.getenv(
+        "CONFIG_FILE",
+        str(Path(__file__).parent.parent / "config.json")
+    )
+
+
+def load_config():
+    """
+    Load configuration from JSON file.
+    
+    Returns:
+        Dictionary containing configuration
+    """
+    config_file = get_config_file()
+    with open(config_file, "r", encoding="utf-8") as f:
+        return json.load(f)
 

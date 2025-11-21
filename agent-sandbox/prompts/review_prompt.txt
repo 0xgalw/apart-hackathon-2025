@@ -1,0 +1,2 @@
+Review the current website and make improvements. Add new features, enhance existing ones, improve styling, add more content, or fix any issues. The web server is already running on port 8000, so you can make changes directly. Be creative and make meaningful improvements.
+
