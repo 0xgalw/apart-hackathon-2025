@@ -6,7 +6,7 @@ from utils_module import load_config
 
 def initialize_llm(models_to_try=None):
     """
-    Initialize LLM based on MODEL_TYPE environment variable.
+    Initialize LLM based on model_type from config.json.
     
     Args:
         models_to_try: List of model names to try in order
@@ -17,15 +17,15 @@ def initialize_llm(models_to_try=None):
     Raises:
         ValueError: If no model can be initialized
     """
-    model_type = os.getenv("MODEL_TYPE", "openai").lower()
+    config = load_config()
+    model_type = config.get("model_type", "openai").lower()
     
     if model_type == "openrouter":
         openrouter_key = os.getenv("OPENROUTER_API_KEY")
         if not openrouter_key:
-            raise ValueError("OPENROUTER_API_KEY environment variable is required when MODEL_TYPE=openrouter")
+            raise ValueError("OPENROUTER_API_KEY environment variable is required when model_type=openrouter")
         
         if models_to_try is None:
-            config = load_config()
             openrouter_config = config.get("openrouter", {})
             chosen_model = openrouter_config.get("chosen_model")
             models = openrouter_config.get("models", [])
@@ -54,7 +54,6 @@ def initialize_llm(models_to_try=None):
     
     elif model_type == "openai":
         if models_to_try is None:
-            config = load_config()
             openai_config = config.get("openai", {})
             chosen_model = openai_config.get("chosen_model")
             models = openai_config.get("models", [])
@@ -67,7 +66,7 @@ def initialize_llm(models_to_try=None):
         
         openai_api_key = os.getenv("OPENAI_API_KEY")
         if not openai_api_key:
-            raise ValueError("OPENAI_API_KEY environment variable is required when MODEL_TYPE=openai")
+            raise ValueError("OPENAI_API_KEY environment variable is required when model_type=openai")
         
         for model_name in models_to_try:
             try:
