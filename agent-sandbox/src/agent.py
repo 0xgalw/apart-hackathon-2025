@@ -18,9 +18,7 @@ from langchain_module import (
     is_port_listening
 )
 from utils_module import (
-    read_file_content,
-    find_prompt_file,
-    get_system_prompt_file
+    load_prompts_from_config
 )
 from execution_module import (
     execute_task,
@@ -40,18 +38,16 @@ session_id = create_session()
 # Initialize model
 llm, chosen_model = initialize_llm()
 
-# Read system prompt
-system_prompt_file = get_system_prompt_file()
-system_prompt = read_file_content(system_prompt_file)
+# Read system prompt from config
+system_prompt = load_prompts_from_config("system")
 
 # Create bash tool and agent
 bash_tool = create_bash_tool(session_id, log_dir, log_mode, tee_logger)
 logger_callback = LoggerCallback(tee_logger)
 agent = create_agent_with_tools(llm, system_prompt, bash_tool, logger_callback)
 
-# Read command from prompt file
-prompt_file = find_prompt_file()
-command = read_file_content(prompt_file)
+# Read initial prompt from config
+command = load_prompts_from_config("initial")
 
 if not command:
     sys.exit(1)
