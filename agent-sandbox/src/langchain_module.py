@@ -197,7 +197,7 @@ def create_agent_with_tools(llm, system_prompt, bash_tool, logger_callback):
         model=llm,
         tools=[bash_tool],
         system_prompt=system_prompt,
-        debug=True
+        debug=False
     )
 
 

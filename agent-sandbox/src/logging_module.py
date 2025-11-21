@@ -10,24 +10,20 @@ from langchain_core.callbacks import BaseCallbackHandler
 
 
 class TeeLogger:
-    """Writes to both file and stdout."""
+    """Writes to file only (not stdout) to keep demo output clean."""
     
     def __init__(self, file_path):
         self.file = open(file_path, "a", encoding="utf-8")
-        self.stdout = sys.stdout
         self.closed = False
         
     def write(self, message):
         if not self.closed:
             self.file.write(message)
             self.file.flush()
-        self.stdout.write(message)
-        self.stdout.flush()
         
     def flush(self):
         if not self.closed:
             self.file.flush()
-        self.stdout.flush()
         
     def close(self):
         if not self.closed:
@@ -123,11 +119,26 @@ class LoggerCallback(BaseCallbackHandler):
         self.tee_logger = tee_logger
         
     def on_tool_start(self, tool, input_str, **kwargs):
-        message = f"[{datetime.now().isoformat()}] TOOL START: {tool.name} -> {input_str}\n"
+        # Truncate long inputs
+        max_length = 200
+        if len(str(input_str)) > max_length:
+            input_display = str(input_str)[:max_length] + "..."
+        else:
+            input_display = str(input_str)
+        
+        # Handle tool being either a dict or object
+        tool_name = tool.get('name') if isinstance(tool, dict) else getattr(tool, 'name', 'Unknown')
+        message = f"[{datetime.now().isoformat()}] TOOL START: {tool_name} -> {input_display}\n"
         self.tee_logger.write(message)
         
     def on_tool_end(self, output, **kwargs):
-        message = f"[{datetime.now().isoformat()}] TOOL END -> {output}\n"
+        # Truncate long outputs
+        max_length = 200
+        if len(str(output)) > max_length:
+            output_display = str(output)[:max_length] + "..."
+        else:
+            output_display = str(output)
+        message = f"[{datetime.now().isoformat()}] TOOL END -> {output_display}\n"
         self.tee_logger.write(message)
 
 
