@@ -4,6 +4,7 @@ docker build -t agent .
 LOG_DIR="$(pwd)/logs"
 
 mkdir -p $LOG_DIR
+mkdir -p $LOG_DIR/output
 
 # Run the Docker container with volume mounts for logs and output
 docker run --rm \
