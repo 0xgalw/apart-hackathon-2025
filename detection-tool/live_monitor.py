@@ -105,7 +105,7 @@ def main():
                     cmd_display = cmd[:max_cmd_length] + "..."
                 else:
                     cmd_display = cmd
-                print(f"▶ {cmd_display}")
+                print(f"▶ CMD: {cmd_display}")
                 
                 # Analyze
                 flags = detector.analyze_entry(entry)
@@ -113,10 +113,8 @@ def main():
                 
                 # Print immediate flags with extra visibility
                 if flags:
-                    print("\n" + "!" * 80)
                     for flag in flags:
                         print_flag(flag)
-                    print("!" * 80 + "\n")
                 
                 # Show current score if it changed
                 verdict, confidence = calculate_verdict(detector.suspicion_score)
