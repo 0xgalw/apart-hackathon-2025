@@ -1,4 +1,5 @@
 {
+  "model_type": "openai",
   "openrouter": {
     "models": [
       "mistralai/devstral-medium",
