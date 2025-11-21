@@ -26,6 +26,7 @@ def follow_file(filepath: str) -> Generator[str, None, None]:
         
         while True:
             line = f.readline()
+            if line: print(line)
             if not line:
                 time.sleep(0.1)
                 continue

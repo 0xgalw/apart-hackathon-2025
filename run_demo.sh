@@ -45,7 +45,12 @@ echo -e "${BLUE}----------------------------------------${NC}"
 # Ensure clean slate
 docker rm -f malicious-agent-demo 2>/dev/null || true
 cd "$AGENT_DIR"
+
 ./run.sh
+# ./interactive.sh
+# ./interactive.sh --loop
+# ./interactive.sh example_for_loop.txt 
+
 cd "$DEMO_ROOT"
 
 # 5. Cleanup

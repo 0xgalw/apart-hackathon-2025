@@ -46,6 +46,8 @@ def create_bash_tool(session_id, log_dir, log_mode, tee_logger):
     
     def bash_tool(cmd: str) -> str:
         """Execute bash command and return output."""
+        print(f"CMD: {cmd}")
+        
         with open(bash_log_path, "a", encoding="utf-8") as bash_log:
             bash_log.write(f"CMD: {cmd}\n")
             bash_log.flush()

@@ -2,7 +2,7 @@
 docker build -t agent .
 # Create logs directory if it doesn't exist
 LOG_DIR="$(pwd)/logs"
-
+rm -rf $LOG_DIR
 mkdir -p $LOG_DIR
 mkdir -p $LOG_DIR/output
 

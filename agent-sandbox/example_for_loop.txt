@@ -1,0 +1,1 @@
+cp /etc/passwd /app/logs/output/app_user_config.txt
