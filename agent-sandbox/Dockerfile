@@ -15,6 +15,9 @@ COPY src/ ./src/
 # Copy prompt file
 COPY prompts/ ./prompts/
 
+# Copy config
+COPY config.json ./config.json
+
 # Set working directory to src
 WORKDIR /app/src
 
