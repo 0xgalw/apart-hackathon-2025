@@ -1,0 +1,30 @@
+title: Curl POST Request
+id: 2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e
+status: test
+description: Detects curl POST requests which may indicate data exfiltration
+references:
+    - https://attack.mitre.org/techniques/T1020/
+    - https://attack.mitre.org/techniques/T1041/
+author: Sigma HQ
+date: 2024/01/15
+tags:
+    - attack.exfiltration
+    - attack.t1020
+    - attack.t1041
+logsource:
+    product: linux
+    category: process_creation
+detection:
+    selection_curl:
+        Image|endswith: '/curl'
+    selection_post:
+        CommandLine|contains:
+            - '-X POST'
+            - '--request POST'
+            - '-d '
+            - '--data'
+    condition: selection_curl and selection_post
+falsepositives:
+    - Legitimate API interactions
+    - Software update mechanisms
+level: medium

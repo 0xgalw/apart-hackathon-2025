@@ -1,0 +1,23 @@
+title: Crontab Command Execution
+id: 7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d
+status: stable
+description: Detects crontab command execution which may indicate persistence
+references:
+    - https://attack.mitre.org/techniques/T1053/003/
+author: Sigma HQ
+date: 2024/01/15
+tags:
+    - attack.persistence
+    - attack.t1053.003
+logsource:
+    product: linux
+    service: auditd
+detection:
+    selection:
+        CommandLine|contains: 'crontab'
+    filter:
+        CommandLine|contains: 'crontab -l'  # List is benign
+    condition: selection and not filter
+falsepositives:
+    - Legitimate cron management
+level: medium

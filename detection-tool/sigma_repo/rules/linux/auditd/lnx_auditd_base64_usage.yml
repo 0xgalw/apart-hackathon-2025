@@ -1,0 +1,24 @@
+title: Base64 Encoding Activity
+id: 9a1b2c3d-4e5f-6a7b-8c9d-0e1f2a3b4c5d
+status: test
+description: Detects base64 encoding which may indicate data obfuscation or exfiltration
+references:
+    - https://attack.mitre.org/techniques/T1027/
+author: Sigma HQ
+date: 2024/01/15
+tags:
+    - attack.defense_evasion
+    - attack.t1027
+    - attack.exfiltration
+logsource:
+    product: linux
+    service: auditd
+detection:
+    selection:
+        type: 'EXECVE'
+        a0: 'base64'
+    condition: selection
+falsepositives:
+    - Legitimate base64 encoding operations
+    - Software development activities
+level: medium

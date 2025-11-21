@@ -3,3 +3,8 @@ agent-sandbox/logs/*
 agent-sandbox/src/__pycache__/*
 
 __pycache__/
+.env
+.DS_Store
+.idea/
+.vscode/
+.pytest_cache/

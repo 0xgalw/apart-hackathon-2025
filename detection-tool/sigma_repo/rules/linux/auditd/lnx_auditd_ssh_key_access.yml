@@ -1,0 +1,36 @@
+title: Private SSH Key File Access
+id: 4b74d5f4-1c47-4a4e-8e3f-3c8c8b8a1234
+status: test
+description: Detects access to private SSH key files which could indicate credential theft
+references:
+    - https://attack.mitre.org/techniques/T1552/004/
+author: Sigma HQ
+date: 2024/01/15
+modified: 2024/11/18
+tags:
+    - attack.credential_access
+    - attack.t1552.004
+logsource:
+    product: linux
+    service: auditd
+detection:
+    selection_cat:
+        type: 'EXECVE'
+        a0|contains:
+            - 'cat'
+            - 'less'
+            - 'more'
+            - 'tail'
+            - 'head'
+            - 'grep'
+    selection_file:
+        a1|contains:
+            - '.ssh/id_rsa'
+            - '.ssh/id_ed25519'
+            - '.ssh/id_ecdsa'
+            - '.ssh/id_dsa'
+    condition: selection_cat and selection_file
+falsepositives:
+    - Legitimate SSH key usage by administrators
+    - Backup operations
+level: high

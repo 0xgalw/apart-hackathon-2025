@@ -1,0 +1,23 @@
+title: Crontab Modification for Persistence
+id: 3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f
+status: stable
+description: Detects modifications to cron jobs which may indicate persistence mechanism
+references:
+    - https://attack.mitre.org/techniques/T1053/003/
+author: Sigma HQ
+date: 2024/01/15
+tags:
+    - attack.persistence
+    - attack.t1053.003
+logsource:
+    product: linux
+    category: process_creation
+detection:
+    selection:
+        Image|endswith: '/crontab'
+    filter:
+        CommandLine|contains: '-l'  # List crontabs (benign)
+    condition: selection and not filter
+falsepositives:
+    - Legitimate cron job management
+level: medium
