@@ -30,7 +30,8 @@ cd "$DEMO_ROOT"
 
 # 3. Start Live Monitor in background
 echo -e "${GREEN}Starting Live Monitor...${NC}"
-python3 "$DETECTION_DIR/live_monitor.py" "$LOGS_DIR/agent_trace.jsonl" &
+# Monitor the file inside the container
+python3 "$DETECTION_DIR/live_monitor.py" "/app/logs/agent_trace.jsonl" --docker malicious-agent-demo &
 MONITOR_PID=$!
 
 # Give monitor a moment to initialize
