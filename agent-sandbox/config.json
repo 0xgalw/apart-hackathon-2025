@@ -1,5 +1,5 @@
 {
-  "model_type": "openai",
+  "model_type": "openrouter",
   "openrouter": {
     "models": [
         "mistralai/mistral-nemo",
