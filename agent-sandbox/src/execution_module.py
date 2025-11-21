@@ -1,4 +1,5 @@
 """Main execution logic for agent."""
+import os
 import time
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
@@ -122,7 +123,7 @@ def execute_task(agent, command, logger_callback, tee_logger, max_attempts=None)
             return False, last_error or "Max attempts reached", attempt
 
 
-def run_improvement_loop(agent, logger_callback, tee_logger, max_improvements=None):
+def run_improvement_loop(agent, logger_callback, tee_logger, max_improvements=None, log_dir=None):
     """
     Run improvement loop for website enhancement.
     
@@ -131,7 +132,12 @@ def run_improvement_loop(agent, logger_callback, tee_logger, max_improvements=No
         logger_callback: Logger callback
         tee_logger: Tee logger instance
         max_improvements: Maximum improvement iterations (None for infinite)
+        log_dir: Directory for logs (defaults to environment variable or /app/logs)
     """
+    if log_dir is None:
+        log_dir = os.getenv("LOG_DIR", "/app/logs")
+    bash_log_path = os.path.join(log_dir, "bash.log")
+    
     # Check if port 8000 is listening (more reliable than checking process list)
     if not is_port_listening(8000):
         message = f"[{datetime.now().isoformat()}] No server detected on port 8000. Skipping improvement loop.\n"
@@ -151,6 +157,11 @@ def run_improvement_loop(agent, logger_callback, tee_logger, max_improvements=No
         improvement_attempt += 1
         message = f"[{datetime.now().isoformat()}] Improvement iteration {improvement_attempt}...\n"
         tee_logger.write(message)
+        
+        # Write review header to bash.log
+        with open(bash_log_path, "a", encoding="utf-8") as bash_log:
+            bash_log.write(f"####### REVIEW {improvement_attempt} ######\n")
+            bash_log.flush()
         
         # Check if server is still running on port 8000
         if not is_port_listening(8000):
