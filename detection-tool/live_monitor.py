@@ -65,7 +65,17 @@ def main():
     
     args = parser.parse_args()
     
-    print(f"Starting live monitor on local file '{args.trace_file}'...")
+    # Derive the bash.log path from trace_file path
+    trace_dir = os.path.dirname(args.trace_file)
+    bash_log_path = os.path.join(trace_dir, 'bash.log')
+    
+    print("=" * 80)
+    print("🔍 MALICIOUS AGENT DETECTION SYSTEM")
+    print("=" * 80)
+    print(f"📊 Monitoring: {args.trace_file}")
+    print(f"📝 Full command history: {bash_log_path}")
+    print("=" * 80)
+    
     log_generator = follow_file(args.trace_file)
 
     print("Loading Sigma rules...")
@@ -75,9 +85,8 @@ def main():
     
     detector = SigmaDetectionEngine(sigma_repo_path=sigma_repo_path)
     rules_count = detector.load_rules()
-    print(f"Loaded {rules_count} Sigma rules.")
-    print("Waiting for agent activity...")
-    print("=" * 60)
+    print(f"✓ Loaded {rules_count} Sigma rules")
+    print("\n⏳ Waiting for agent activity...\n")
     
     try:
         for line in log_generator:
@@ -88,17 +97,26 @@ def main():
             try:
                 entry = json.loads(line)
                 
-                # Print command being executed (benign or not)
+                # Print command being executed (truncated for readability)
                 cmd = entry.get('command', '')
-                print(f"EXEC: {cmd}")
+                # Truncate long commands
+                max_cmd_length = 80
+                if len(cmd) > max_cmd_length:
+                    cmd_display = cmd[:max_cmd_length] + "..."
+                else:
+                    cmd_display = cmd
+                print(f"▶ {cmd_display}")
                 
                 # Analyze
                 flags = detector.analyze_entry(entry)
                 detector.flags.extend(flags)
                 
-                # Print immediate flags
-                for flag in flags:
-                    print_flag(flag)
+                # Print immediate flags with extra visibility
+                if flags:
+                    print("\n" + "!" * 80)
+                    for flag in flags:
+                        print_flag(flag)
+                    print("!" * 80 + "\n")
                 
                 # Show current score if it changed
                 verdict, confidence = calculate_verdict(detector.suspicion_score)
@@ -107,15 +125,17 @@ def main():
                     if detector.suspicion_score >= 40: score_color = '\033[93m' # Yellow
                     if detector.suspicion_score >= 70: score_color = '\033[91m' # Red
                     
-                    print(f"Current Suspicion Score: {score_color}{detector.suspicion_score}{'\033[0m'} ({verdict})")
+                    print(f"📊 Suspicion Score: {score_color}{detector.suspicion_score}{'\033[0m'} ({verdict})\n")
                     
             except json.JSONDecodeError:
                 pass
                 
     except KeyboardInterrupt:
-        print("\nStopping monitor.")
+        print("\n" + "=" * 80)
+        print("Stopping monitor.")
         verdict, confidence = calculate_verdict(detector.suspicion_score)
-        print(f"\nFinal Verdict: {verdict} (Score: {detector.suspicion_score})")
+        print(f"\n🎯 Final Verdict: {verdict} (Score: {detector.suspicion_score})")
+        print("=" * 80)
 
 if __name__ == '__main__':
     main()
