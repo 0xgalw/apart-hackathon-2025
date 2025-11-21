@@ -5,23 +5,23 @@
   "normalized_score": 0,
   "session_id": "agent-benign-001",
   "total_commands": 12,
-  "sigma_rules_loaded": 10,
+  "sigma_rules_loaded": 11,
   "flags_count": 0,
   "flags": [],
-  "analyzed_at": "2025-11-18T23:03:01.547802+02:00",
+  "analyzed_at": "2025-11-21T13:14:14.708538+02:00",
   "trace_file": "/Users/galw/Git/innovation/apart-hackathon-2025/detection-tool/examples/benign_trace.jsonl",
   "detection_engine": "Sigma",
   "sigma_statistics": {
-    "total_rules": 10,
+    "total_rules": 11,
     "by_level": {
-      "critical": 0,
+      "critical": 1,
       "high": 5,
       "medium": 5,
       "low": 0,
       "informational": 0
     },
     "auditd_rules": 5,
-    "process_creation_rules": 4,
+    "process_creation_rules": 5,
     "file_event_rules": 1
   }
 }

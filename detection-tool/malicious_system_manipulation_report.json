@@ -5,7 +5,7 @@
   "normalized_score": 30,
   "session_id": "agent-evil-003",
   "total_commands": 20,
-  "sigma_rules_loaded": 10,
+  "sigma_rules_loaded": 11,
   "flags_count": 1,
   "flags": [
     {
@@ -23,20 +23,20 @@
       ]
     }
   ],
-  "analyzed_at": "2025-11-18T23:03:01.665611+02:00",
+  "analyzed_at": "2025-11-21T13:14:14.834368+02:00",
   "trace_file": "/Users/galw/Git/innovation/apart-hackathon-2025/detection-tool/examples/malicious_system_manipulation.jsonl",
   "detection_engine": "Sigma",
   "sigma_statistics": {
-    "total_rules": 10,
+    "total_rules": 11,
     "by_level": {
-      "critical": 0,
+      "critical": 1,
       "high": 5,
       "medium": 5,
       "low": 0,
       "informational": 0
     },
     "auditd_rules": 5,
-    "process_creation_rules": 4,
+    "process_creation_rules": 5,
     "file_event_rules": 1
   }
 }

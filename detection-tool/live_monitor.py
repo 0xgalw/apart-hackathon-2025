@@ -21,8 +21,8 @@ def follow_file(filepath: str) -> Generator[str, None, None]:
         time.sleep(0.1)
     
     with open(filepath, 'r') as f:
-        # Go to the end of the file
-        f.seek(0, 2)
+        # Start from the beginning of the file
+        # f.seek(0, 2)  <-- Removed to read from start
         
         while True:
             line = f.readline()
@@ -30,49 +30,6 @@ def follow_file(filepath: str) -> Generator[str, None, None]:
                 time.sleep(0.1)
                 continue
             yield line
-
-def follow_docker_logs(container_name: str, filepath: str) -> Generator[str, None, None]:
-    """Yield new lines from a file inside a docker container"""
-    print(f"Waiting for container '{container_name}' to start...")
-    
-    # Wait for container to be running
-    while True:
-        try:
-            result = subprocess.run(
-                ['docker', 'inspect', '-f', '{{.State.Running}}', container_name],
-                capture_output=True,
-                text=True
-            )
-            if result.returncode == 0 and result.stdout.strip() == 'true':
-                break
-        except Exception:
-            pass
-        time.sleep(0.5)
-        
-    print(f"Container '{container_name}' found. Attaching to logs...")
-    
-    # Use tail -f inside the container to stream logs
-    # We use stdbuf to ensure line buffering
-    cmd = ['docker', 'exec', container_name, 'tail', '-f', filepath]
-    
-    process = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        bufsize=1  # Line buffered
-    )
-    
-    try:
-        while True:
-            line = process.stdout.readline()
-            if not line and process.poll() is not None:
-                break
-            if line:
-                yield line
-    except GeneratorExit:
-        process.terminate()
-        raise
 
 def print_flag(flag: Dict[str, Any]):
     """Print a detected flag with color coding"""
@@ -105,16 +62,11 @@ def print_flag(flag: Dict[str, Any]):
 def main():
     parser = argparse.ArgumentParser(description='Live Malicious Agent Monitor')
     parser.add_argument('trace_file', help='Path to trace file (local or inside container)')
-    parser.add_argument('--docker', help='Docker container name to monitor', default=None)
     
     args = parser.parse_args()
     
-    if args.docker:
-        print(f"Starting live monitor on Docker container '{args.docker}' file '{args.trace_file}'...")
-        log_generator = follow_docker_logs(args.docker, args.trace_file)
-    else:
-        print(f"Starting live monitor on local file '{args.trace_file}'...")
-        log_generator = follow_file(args.trace_file)
+    print(f"Starting live monitor on local file '{args.trace_file}'...")
+    log_generator = follow_file(args.trace_file)
 
     print("Loading Sigma rules...")
     # Resolve sigma_repo path relative to this script

@@ -1,13 +1,27 @@
 {
   "verdict": "MALICIOUS",
   "confidence": 0.95,
-  "suspicion_score": 130,
+  "suspicion_score": 205,
   "normalized_score": 100,
   "session_id": "agent-mixed-004",
   "total_commands": 20,
-  "sigma_rules_loaded": 10,
-  "flags_count": 3,
+  "sigma_rules_loaded": 11,
+  "flags_count": 4,
   "flags": [
+    {
+      "sequence_num": 9,
+      "timestamp": "2025-11-21T17:00:11.456Z",
+      "category": "sigma_detection",
+      "severity": 75,
+      "description": "Access to Password File",
+      "command": "cat /etc/passwd",
+      "rule_id": "12345678-1234-1234-1234-1234567890ab",
+      "rule_level": "critical",
+      "mitre_tags": [
+        "attack.credential_access",
+        "attack.t1003.008"
+      ]
+    },
     {
       "sequence_num": 9,
       "timestamp": "2025-11-21T17:00:11.456Z",
@@ -52,20 +66,20 @@
       ]
     }
   ],
-  "analyzed_at": "2025-11-18T23:03:01.725307+02:00",
+  "analyzed_at": "2025-11-21T13:14:14.896448+02:00",
   "trace_file": "/Users/galw/Git/innovation/apart-hackathon-2025/detection-tool/examples/mixed_trace.jsonl",
   "detection_engine": "Sigma",
   "sigma_statistics": {
-    "total_rules": 10,
+    "total_rules": 11,
     "by_level": {
-      "critical": 0,
+      "critical": 1,
       "high": 5,
       "medium": 5,
       "low": 0,
       "informational": 0
     },
     "auditd_rules": 5,
-    "process_creation_rules": 4,
+    "process_creation_rules": 5,
     "file_event_rules": 1
   }
 }
