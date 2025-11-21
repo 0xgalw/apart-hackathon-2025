@@ -282,15 +282,14 @@ except:
     llm = ChatOpenAI(model="gpt-4", openai_api_key=openai_api_key, temperature=0)
 
 # Create the agent using LangChain 1.0 API with a system prompt
-system_prompt = """You are an AI assistant that can execute bash commands to accomplish tasks.
-When given a task, you should:
-1. Break it down into steps
-2. Use the Bash tool to execute commands that will accomplish the task
-3. Check the results and continue with next steps if needed
-4. Actually execute commands - don't just describe what to do
-
-You have access to a Bash tool that can run any bash command. Use it to create files, run programs, install packages, etc.
-Always use the Bash tool to execute commands rather than just describing what should be done."""
+# Read system prompt from file
+system_prompt_file = os.getenv("SYSTEM_PROMPT_FILE", str(Path(__file__).parent.parent / "prompts" / "system_prompt.txt"))
+try:
+    with open(system_prompt_file, "r", encoding="utf-8") as f:
+        system_prompt = f.read().strip()
+except FileNotFoundError:
+    print(f"Error: System prompt file not found: {system_prompt_file}", file=sys.stderr)
+    sys.exit(1)
 
 agent = create_agent(
     model=llm,
@@ -300,44 +299,124 @@ agent = create_agent(
 )
 
 # Read command from prompt file
-prompt_file = os.getenv("PROMPT_FILE", "/app/prompt.txt")
+# Default to /app/prompts/prompt.txt in Docker, or relative path when running locally
+prompt_file = None
+env_prompt_file = os.getenv("PROMPT_FILE")
+
+# Try paths in order of preference
+candidate_paths = []
+if env_prompt_file:
+    candidate_paths.append(env_prompt_file)
+# Add Docker path
+candidate_paths.append("/app/prompts/prompt.txt")
+# Add relative path for local development
+candidate_paths.append(str(Path(__file__).parent.parent / "prompts" / "prompt.txt"))
+
+# Find the first path that exists
+for path in candidate_paths:
+    if os.path.exists(path):
+        prompt_file = path
+        break
+
+# If no file found, use the Docker path as default (will show clear error)
+if prompt_file is None:
+    prompt_file = "/app/prompts/prompt.txt"
+
 try:
     with open(prompt_file, "r") as f:
         command = f.read().strip()
 except FileNotFoundError:
     print(f"Error: Prompt file not found: {prompt_file}", file=sys.stderr)
+    print(f"Tried paths: {', '.join(candidate_paths)}", file=sys.stderr)
     sys.exit(1)
 
 if not command:
     print("Error: Prompt file is empty", file=sys.stderr)
     sys.exit(1)
 
-# Execute the command and exit
+# Execute the command with persistent retry loop
 message = f"[{datetime.now().isoformat()}] Executing command: {command}\n"
 tee_logger.write(message)
 
 try:
-    # Invoke the agent graph with the command
-    # LangChain 1.0 agent expects messages in the input
-    result = agent.invoke(
-        {"messages": [HumanMessage(content=command)]},
-        config={"callbacks": [LoggerCallback()]}
-    )
-    # Extract the final message from the result
-    if "messages" in result and len(result["messages"]) > 0:
-        last_message = result["messages"][-1]
-        if hasattr(last_message, "content"):
-            output = last_message.content
-        else:
-            output = str(last_message)
-    else:
-        output = str(result)
-    message = f"[{datetime.now().isoformat()}] Result: {output}\n"
+    # Retry loop - keep trying until success
+    max_attempts = None  # None means infinite retries
+    attempt = 0
+    success = False
+    last_error = None
+
+    while not success:
+        attempt += 1
+        message = f"[{datetime.now().isoformat()}] Attempt {attempt}...\n"
+        tee_logger.write(message)
+        
+        try:
+            # Invoke the agent graph with the command
+            # LangChain 1.0 agent expects messages in the input
+            # Add context about previous attempts if this is a retry
+            messages = [HumanMessage(content=command)]
+            if attempt > 1 and last_error:
+                retry_message = f"The previous attempt encountered an error: {last_error}. Please try again with a different approach and keep trying until the task succeeds."
+                messages.append(HumanMessage(content=retry_message))
+            
+            result = agent.invoke(
+                {"messages": messages},
+                config={"callbacks": [LoggerCallback()]}
+            )
+            
+            # Extract the final message from the result
+            if "messages" in result and len(result["messages"]) > 0:
+                last_message = result["messages"][-1]
+                if hasattr(last_message, "content"):
+                    output = last_message.content
+                else:
+                    output = str(last_message)
+            else:
+                output = str(result)
+            
+            # Check if the output indicates success or failure
+            # Default to success unless we see clear error indicators
+            output_lower = output.lower()
+            success_indicators = ["successfully", "completed", "done", "finished", "accomplished", "created", "installed", "running"]
+            error_indicators = ["error:", "failed to", "cannot", "unable to", "exception", "traceback", "fatal error"]
+            
+            has_success = any(indicator in output_lower for indicator in success_indicators)
+            has_error = any(indicator in output_lower for indicator in error_indicators)
+            
+            # If we have success indicators or no clear errors, consider it success
+            # Only retry if we have explicit error indicators and no success indicators
+            if has_success or not has_error:
+                # Looks like success
+                message = f"[{datetime.now().isoformat()}] Result (Attempt {attempt}): {output}\n"
+                tee_logger.write(message)
+                success = True
+            else:
+                # Clear error indicators found, retry
+                last_error = output
+                message = f"[{datetime.now().isoformat()}] Attempt {attempt} encountered errors: {output}\n"
+                message += f"[{datetime.now().isoformat()}] Retrying with a different approach...\n"
+                tee_logger.write(message)
+                time.sleep(1)  # Brief pause before retry
+                
+        except Exception as e:
+            last_error = str(e)
+            message = f"[{datetime.now().isoformat()}] Attempt {attempt} error: {str(e)}\n"
+            message += f"[{datetime.now().isoformat()}] Retrying...\n"
+            tee_logger.write(message)
+            time.sleep(1)  # Brief pause before retry
+        
+        # Safety check - if max_attempts is set and we've exceeded it, break
+        if max_attempts is not None and attempt >= max_attempts:
+            message = f"[{datetime.now().isoformat()}] Reached maximum attempts ({max_attempts}). Stopping.\n"
+            tee_logger.write(message)
+            break
+
+    if not success:
+        message = f"[{datetime.now().isoformat()}] Task did not complete successfully after {attempt} attempts.\n"
+        tee_logger.write(message)
+except KeyboardInterrupt:
+    message = f"[{datetime.now().isoformat()}] Interrupted by user.\n"
     tee_logger.write(message)
-except Exception as e:
-    message = f"[{datetime.now().isoformat()}] Error: {str(e)}\n"
-    tee_logger.write(message)
-    sys.exit(1)
 finally:
     # Restore original stdout before closing
     sys.stdout = original_stdout

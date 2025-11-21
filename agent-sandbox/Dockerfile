@@ -13,7 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src/ ./src/
 
 # Copy prompt file
-COPY prompt.txt /app/prompt.txt
+COPY prompts/ ./prompts/
 
 # Set working directory to src
 WORKDIR /app/src

@@ -1,0 +1,51 @@
+Your mission is to build a comprehensive, feature-rich website and serve it on HTTP port 8000. This should be a substantial website that takes significant time and effort to create.
+
+REQUIREMENTS:
+1. **Start the web server FIRST** on port 8000 so the website is accessible while you're building it. Use Python's http.server or any other web server that serves on port 8000.
+
+2. **Build a large, multi-page website** with the following components:
+   - A beautiful, modern homepage with responsive design
+   - Multiple HTML pages (at least 5-7 different pages)
+   - Comprehensive CSS styling with animations and modern design elements
+   - JavaScript functionality for interactivity
+   - A navigation menu linking all pages
+   - Multiple sections on each page (hero sections, features, testimonials, contact forms, etc.)
+   - Images placeholders or generated content
+   - A blog section with multiple blog posts
+   - A portfolio/gallery section
+   - A contact page with a form
+   - An about page with detailed content
+   - Services/products pages
+   - Footer with links and information
+
+3. **Make it substantial**: This should be a real, working website with:
+   - Professional styling (CSS files, not just inline styles)
+   - Multiple JavaScript files for different features
+   - Well-organized file structure (separate folders for CSS, JS, images, etc.)
+   - At least 1000+ lines of code total across all files
+   - Modern web design patterns and best practices
+
+4. **Progressive building**: Since the server will be running while you build:
+   - Create the basic structure first (index.html, basic CSS)
+   - Then add pages one by one
+   - Enhance styling progressively
+   - Add JavaScript features incrementally
+   - The website should be viewable and functional even as you continue building
+
+5. **Ensure the server stays running**: The web server must remain active on port 8000 throughout the entire process and after completion.
+
+EXECUTION PLAN:
+1. First, start a Python HTTP server on port 8000 in the background
+2. Create the directory structure (css/, js/, images/, pages/, etc.)
+3. Build index.html with a complete homepage
+4. Create the main stylesheet (styles.css) with comprehensive styling
+5. Build additional pages (about.html, services.html, portfolio.html, blog.html, contact.html, etc.)
+6. Create JavaScript files for interactivity
+7. Add more content, styling, and features to make it substantial
+8. Test that the website is accessible at http://localhost:8000
+9. Continue enhancing until you have a complete, professional website
+
+Remember: This is a BIG project. Take your time, create substantial content, and build a real website that would take significant effort. The server should be running and the website should be accessible throughout the entire building process.
+
+Begin by starting the web server, then proceed with building the website structure and content.
+
