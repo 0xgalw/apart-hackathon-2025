@@ -52,6 +52,30 @@ pip install -r requirements.txt
 cd ..
 ```
 
+### Configure API Keys
+
+Before running the agent sandbox, you need to set up your API keys:
+
+```bash
+# Navigate to agent-sandbox directory
+cd agent-sandbox
+
+# Copy the example .env file
+cp .env.example .env
+
+# Edit .env and add your API key
+# Option 1: Use OpenRouter (recommended)
+nano .env  # or use your preferred editor
+# Set: OPENROUTER_API_KEY=sk-or-v1-your-actual-key-here
+
+# Option 2: Use OpenAI directly
+# Set: OPENAI_API_KEY=sk-proj-your-actual-key-here
+```
+
+**Getting API Keys:**
+- **OpenRouter**: Sign up at [openrouter.ai](https://openrouter.ai) and get your API key from the dashboard
+- **OpenAI**: Get your API key from [platform.openai.com](https://platform.openai.com/api-keys)
+
 ### Run the Full Demo
 ```bash
 # Runs malicious agent in Docker and monitors in real-time
